@@ -1,0 +1,9 @@
+VolatileBlocks:
+  white_wool:
+    ExplosivePower: 2.0
+    ExplosionProbability: 0.2
+    IsIncendiary: true
+  coal_block:
+    ExplosivePower: 10.0
+    ExplosionProbability: 0.75
+    IsIncendiary: false
