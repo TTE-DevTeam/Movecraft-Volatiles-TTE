@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.goodroach</groupId>
-    <artifactId>MovecraftVolatiles</artifactId>
+    <artifactId>Movecraft-Volatiles</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>Movecraft-Volatiles</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -75,11 +75,6 @@
             <artifactId>movecraft</artifactId>
             <version>LATEST</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.countercraft</groupId>
-            <artifactId>movecraft</artifactId>
-            <version>8.0.0_beta-1</version>
         </dependency>
     </dependencies>
 </project>

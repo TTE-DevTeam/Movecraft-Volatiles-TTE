@@ -16,8 +16,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 
-import static me.goodroach.movecraftvolatiles.config.Keys.NOT_VOLATILE_BLOCKS_PER_CRAFT;
-
 public class IgnitionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -35,6 +33,10 @@ public class IgnitionListener implements Listener {
             testBlock = sourceBlock.getRelative(BlockFace.NORTH);
         if (!testBlock.getType().isBurnable())
             testBlock = sourceBlock.getRelative(BlockFace.SOUTH);
+        if (!testBlock.getType().isBurnable())
+            testBlock = sourceBlock.getRelative(BlockFace.UP);
+        if (!testBlock.getType().isBurnable())
+            testBlock = sourceBlock.getRelative(BlockFace.DOWN);
         if (!testBlock.getType().isBurnable())
             return;
 
@@ -56,10 +58,6 @@ public class IgnitionListener implements Listener {
         }
 
         Material material = testBlock.getType();
-        if (craft.getType().getMaterialSetProperty(NOT_VOLATILE_BLOCKS_PER_CRAFT) != null
-                && craft.getType().getMaterialSetProperty(NOT_VOLATILE_BLOCKS_PER_CRAFT).contains(material)) {
-            return;
-        }
         if (!MovecraftVolatiles.getInstance().getVolatilesManager().isVolatileBlock(material)) {
             return;
         }

@@ -6,7 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MovecraftVolatiles" />
+        <module name="Movecraft-Volatiles" />
       </profile>
     </annotationProcessing>
   </component>

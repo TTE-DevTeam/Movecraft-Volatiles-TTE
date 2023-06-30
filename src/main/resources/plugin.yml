@@ -1,4 +1,4 @@
 name: Movecraft-Volatiles
 version: '${project.version}'
-main: me.goodroach.movecraftvolatiles.Movecraft_Volatiles
+main: me.goodroach.movecraftvolatiles.MovecraftVolatiles
 api-version: 1.16
