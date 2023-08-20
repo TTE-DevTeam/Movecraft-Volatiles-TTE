@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,8 +23,9 @@ public class IgnitionListener implements Listener {
     public void onIgnite(BlockIgniteEvent event) {
         if (event.getCause() != BlockIgniteEvent.IgniteCause.FIREBALL)
             return;
-        if (event.getIgnitingEntity() == null)
+        if (event.getIgnitingEntity() == null || event.getIgnitingEntity().getType() == EntityType.PLAYER) {
             return;
+        }
 
         Block sourceBlock = event.getBlock();
         Block testBlock = sourceBlock.getRelative(BlockFace.EAST);
