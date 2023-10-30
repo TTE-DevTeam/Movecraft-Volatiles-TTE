@@ -6,7 +6,7 @@
 
     <groupId>me.goodroach</groupId>
     <artifactId>Movecraft-Volatiles</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <name>Movecraft-Volatiles</name>
@@ -75,6 +75,13 @@
             <artifactId>movecraft</artifactId>
             <version>LATEST</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.countercraft.movecraft.combat</groupId>
+            <artifactId>Movecraft-Combat</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../Movecraft-Combat/target/Movecraft-Combat.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

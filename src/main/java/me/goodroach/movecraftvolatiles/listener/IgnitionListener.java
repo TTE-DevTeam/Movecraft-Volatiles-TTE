@@ -2,29 +2,52 @@ package me.goodroach.movecraftvolatiles.listener;
 
 import me.goodroach.movecraftvolatiles.MovecraftVolatiles;
 import me.goodroach.movecraftvolatiles.data.VolatileBlock;
+import me.goodroach.movecraftvolatiles.tracking.Volatile;
 import net.countercraft.movecraft.MovecraftLocation;
+import net.countercraft.movecraft.combat.MovecraftCombat;
+import net.countercraft.movecraft.combat.features.tracking.DamageRecord;
+import net.countercraft.movecraft.combat.features.tracking.DamageTracking;
+import net.countercraft.movecraft.combat.features.tracking.events.CraftDamagedByEvent;
 import net.countercraft.movecraft.craft.Craft;
 import net.countercraft.movecraft.craft.CraftManager;
+import net.countercraft.movecraft.craft.PlayerCraft;
 import net.countercraft.movecraft.util.MathUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
+
+import static org.bukkit.block.BlockFace.DOWN;
+import static org.bukkit.block.BlockFace.EAST;
+import static org.bukkit.block.BlockFace.NORTH;
+import static org.bukkit.block.BlockFace.SOUTH;
+import static org.bukkit.block.BlockFace.UP;
+import static org.bukkit.block.BlockFace.WEST;
 
 public class IgnitionListener implements Listener {
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onIgnite(BlockIgniteEvent event) {
         if (event.getCause() != BlockIgniteEvent.IgniteCause.FIREBALL)
             return;
-        if (event.getIgnitingEntity() == null || event.getIgnitingEntity().getType() == EntityType.PLAYER) {
-            return;
+
+        @Nullable
+        Player ignitingPlayer = null;
+        if (event.getIgnitingEntity() instanceof Player) {
+            ignitingPlayer = (Player) event.getIgnitingEntity();
+            if (ignitingPlayer.getInventory().getItemInMainHand().getType() == Material.FIRE_CHARGE ||
+                    ignitingPlayer.getInventory().getItemInOffHand().getType() == Material.FIRE_CHARGE) {
+                return;
+            }
         }
 
         Block sourceBlock = event.getBlock();
@@ -42,11 +65,9 @@ public class IgnitionListener implements Listener {
         if (!testBlock.getType().isBurnable())
             return;
 
-        // To prevent infinite recursion we call the event with SPREAD as the cause
-        BlockIgniteEvent igniteEvent = new BlockIgniteEvent(testBlock, BlockIgniteEvent.IgniteCause.SPREAD, event.getIgnitingEntity());
-        Bukkit.getPluginManager().callEvent(igniteEvent);
-        if (igniteEvent.isCancelled())
+        if (!testBlock.getType().isBurnable() || testBlock == null) {
             return;
+        }
 
         Location blockLocation = testBlock.getLocation();
 
@@ -71,6 +92,17 @@ public class IgnitionListener implements Listener {
         }
 
         craft.getWorld().createExplosion(blockLocation, (float) volatileBlock.getExplosivePower(), volatileBlock.isIncendiary());
+        if (craft instanceof PlayerCraft && ignitingPlayer != null) {
+            damagedCraft((PlayerCraft) craft, ignitingPlayer.getUniqueId());
+        }
+    }
+
+    private void damagedCraft(@NotNull PlayerCraft craft, UUID playerUUID) {
+        UUID sender = playerUUID;
+        Player cause = MovecraftCombat.getInstance().getServer().getPlayer(sender);
+
+        DamageRecord damageRecord = new DamageRecord(cause, craft.getPilot(), new Volatile());
+        Bukkit.getPluginManager().callEvent(new CraftDamagedByEvent(craft, damageRecord));
     }
 
     private Craft fastNearestPlayerCraftToLoc(Location source) {

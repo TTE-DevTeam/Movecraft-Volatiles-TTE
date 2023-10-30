@@ -34,10 +34,6 @@ public class ConfigManager {
                         double explosivePower = config.getDouble("VolatileBlocks." + key + ".ExplosivePower", 1.0);
                         double explosionProbability = config.getDouble("VolatileBlocks." + key + ".ExplosionProbability", 1.0);
                         boolean isIncendiary = config.getBoolean("VolatileBlocks." + key + ".IsIncendiary", false);
-                        System.out.println(material.toString());
-                        System.out.println(explosivePower);
-                        System.out.println(explosionProbability);
-                        System.out.println(isIncendiary);
                         MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary);
                     }
                 } else {
