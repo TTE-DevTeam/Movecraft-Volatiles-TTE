@@ -1,18 +1,14 @@
 package me.goodroach.movecraftvolatiles.config;
 
 import me.goodroach.movecraftvolatiles.MovecraftVolatiles;
-import org.bukkit.Bukkit;
+import net.countercraft.movecraft.util.Tags;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Tag;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.logging.Level;
 
 public class ConfigManager {
@@ -25,47 +21,26 @@ public class ConfigManager {
 
     public void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
-        ConfigurationSection volatileBlocks = config.getConfigurationSection("VolatileBlocks");
-        if (volatileBlocks != null) {
-            for (String key : volatileBlocks.getKeys(false)) {
-                List<Material> materials = getBlocks(key);
-                if (materials != null) {
-                    for (Material material : materials) {
-                        double explosivePower = config.getDouble("VolatileBlocks." + key + ".ExplosivePower", 1.0);
-                        double explosionProbability = config.getDouble("VolatileBlocks." + key + ".ExplosionProbability", 1.0);
-                        boolean isIncendiary = config.getBoolean("VolatileBlocks." + key + ".IsIncendiary", false);
-                        MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary);
-                    }
-                } else {
-                    MovecraftVolatiles.getInstance().getLogger().log(
-                            Level.WARNING, "[ERROR] Invalid Material: " + ChatColor.RED + key);
-                }
-            }
-        } else {
-            MovecraftVolatiles.getInstance().getLogger().log(
-                    Level.WARNING, "[ERROR] Config not found!");
+        var section = config.getConfigurationSection("VolatileBlocks");
+        if (section == null) {
+            return;
         }
-    }
 
-    private List<Material> getBlocks(String name) {
-        List<Material> blocks = new ArrayList<>();
-        if (name.startsWith("minecraft:")) {
-            String tagName = name.substring(10);
-            Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(tagName), Material.class);
-            if (tag != null) {
-                blocks.addAll(tag.getValues());
+        for (var entry : section.getValues(false).entrySet()) {
+            EnumSet<Material> materials = Tags.parseMaterials(entry.getKey());
+            if (materials != null) {
+                for (Material material : materials) {
+                    var blockSection = section.getConfigurationSection(entry.getKey());
+                    double explosivePower = blockSection.getDouble("ExplosivePower", 1.0);
+                    double explosionProbability = blockSection.getDouble("ExplosionProbability", 1.0);
+                    boolean isIncendiary = blockSection.getBoolean("IsIncendiary", false);
+                    MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary);
+                }
             } else {
                 MovecraftVolatiles.getInstance().getLogger().log(
-                        Level.WARNING, "Invalid tag: " + name);
-            }
-        } else {
-            Material material = Material.matchMaterial(name.toUpperCase());
-            if (material != null) {
-                blocks.add(material);
+                        Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + entry.getKey());
             }
         }
-        return blocks;
     }
-
 }
 

@@ -13,5 +13,5 @@ public class Keys {
         CraftType.registerProperty(new MaterialSetProperty("NotVolatileBlocks", NOT_VOLATILE_BLOCKS_PER_CRAFT, craftType -> null));
     }
 
-    private static NamespacedKey build (String key) {return new NamespacedKey("movecraft-hitpoints", key);}
+    private static NamespacedKey build (String key) {return new NamespacedKey("movecraft-volatiles", key);}
 }
