@@ -1,5 +1,5 @@
 VolatileBlocks:
-  white_wool:
+  "#wool":
     ExplosivePower: 2.0
     ExplosionProbability: 0.2
     IsIncendiary: true
