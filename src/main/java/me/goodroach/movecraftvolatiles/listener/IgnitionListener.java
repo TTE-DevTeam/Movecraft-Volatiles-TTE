@@ -6,7 +6,6 @@ import me.goodroach.movecraftvolatiles.tracking.Volatile;
 import net.countercraft.movecraft.MovecraftLocation;
 import net.countercraft.movecraft.combat.MovecraftCombat;
 import net.countercraft.movecraft.combat.features.tracking.DamageRecord;
-import net.countercraft.movecraft.combat.features.tracking.DamageTracking;
 import net.countercraft.movecraft.combat.features.tracking.events.CraftDamagedByEvent;
 import net.countercraft.movecraft.craft.Craft;
 import net.countercraft.movecraft.craft.CraftManager;
@@ -26,13 +25,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-
-import static org.bukkit.block.BlockFace.DOWN;
-import static org.bukkit.block.BlockFace.EAST;
-import static org.bukkit.block.BlockFace.NORTH;
-import static org.bukkit.block.BlockFace.SOUTH;
-import static org.bukkit.block.BlockFace.UP;
-import static org.bukkit.block.BlockFace.WEST;
 
 public class IgnitionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)

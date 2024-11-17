@@ -1,0 +1,25 @@
+name: Movecraft-Volatiles-TTE
+version: '${project.version}'
+main: me.goodroach.movecraftvolatiles.MovecraftVolatiles
+api-version: '1.21'
+dependencies:
+  #bootstrap:
+    # Let's say that RegistryPlugin registers some data that your plugin needs to use
+    # We don't need this during runtime, so it's not required in the server section.
+    # However, can be added to both if needed
+    #RegistryPlugin:
+      #load: BEFORE
+      #required: true
+      #join-classpath: true # Defaults to true
+  server:
+    # Add a required "RequiredPlugin" dependency, which will load AFTER your plugin.
+    Movecraft:
+      load: BEFORE
+      required: true
+      # This means that your plugin will not have access to their classpath
+      join-classpath: true
+    Movecraft-Combat:
+      load: BEFORE
+      required: true
+      # This means that your plugin will not have access to their classpath
+      join-classpath: true

@@ -1,7 +1,0 @@
-name: Movecraft-Volatiles
-prefix: Movecraft-Volatiles
-version: '${project.version}'
-main: me.goodroach.movecraftvolatiles.MovecraftVolatiles
-authors: [ goodroach ]
-depend: [Movecraft, Movecraft-Combat]
-api-version: 1.16
