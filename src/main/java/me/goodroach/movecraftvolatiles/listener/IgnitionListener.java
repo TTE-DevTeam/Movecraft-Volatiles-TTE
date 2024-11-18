@@ -26,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.TNTPrimeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -237,7 +238,13 @@ public class IgnitionListener implements Listener {
         if (handleVolatile(event::setCancelled, event.getHitBlock(), shooter, reactionType)) {
             event.getEntity().remove();
         }
+    }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBlockExploded(BlockExplodeEvent event) {
+        event.blockList().removeIf((block) -> {
+            return handleVolatile((b) -> {}, block, null, VolatileBlock.EReactionType.BLOCK_EXPLODED);
+        });
     }
 
 }
