@@ -113,7 +113,7 @@ public class IgnitionListener implements Listener {
         return null;
     }
 
-    protected static boolean handleVolatile(Consumer<Boolean> setEventCancelled, Block affectedBlock, Entity cause, final VolatileBlock.EReactionType eventType {
+    protected static boolean handleVolatile(Consumer<Boolean> setEventCancelled, Block affectedBlock, Entity cause, final VolatileBlock.EReactionType eventType) {
         VolatileBlock volatileBlock = MovecraftVolatiles.getInstance().getVolatilesManager().getVolatileBlock(affectedBlock.getType());
         if (volatileBlock == null) {
             return false;
