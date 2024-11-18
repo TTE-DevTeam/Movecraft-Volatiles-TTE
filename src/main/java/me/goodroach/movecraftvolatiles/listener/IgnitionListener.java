@@ -58,7 +58,7 @@ public class IgnitionListener implements Listener {
             return (block) -> {
                 if (igniteOddsMap != null && blockRetrievalMethod != null) {
                     try {
-                        Object blockObj = blockRetrievalMethod.invoke(block.getType());
+                        Object blockObj = blockRetrievalMethod.invoke(null, block.getType());
                         return igniteOddsMap.getInt(blockObj) > 0;
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         return block.getType().isBurnable();
