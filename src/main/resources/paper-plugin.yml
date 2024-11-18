@@ -1,5 +1,5 @@
 name: Movecraft-Volatiles-TTE
-version: '${project.version}'
+version: '1.0'
 main: me.goodroach.movecraftvolatiles.MovecraftVolatiles
 api-version: '1.21'
 dependencies:
