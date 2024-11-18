@@ -1,6 +1,7 @@
 package me.goodroach.movecraftvolatiles.config;
 
 import me.goodroach.movecraftvolatiles.MovecraftVolatiles;
+import me.goodroach.movecraftvolatiles.data.VolatileBlock;
 import net.countercraft.movecraft.util.Tags;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,7 +35,9 @@ public class ConfigManager {
                     double explosivePower = blockSection.getDouble("ExplosivePower", 1.0);
                     double explosionProbability = blockSection.getDouble("ExplosionProbability", 1.0);
                     boolean isIncendiary = blockSection.getBoolean("IsIncendiary", false);
-                    MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary);
+                    boolean requireCraft = blockSection.getBoolean("IsCraftPresenceNecessary", true);
+                    byte bitmask = (byte) blockSection.getInt("EventMask", VolatileBlock.EReactionType.BLOCK_BURNT.maskValue());
+                    MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary, requireCraft, bitmask);
                 }
             } else {
                 MovecraftVolatiles.getInstance().getLogger().log(
