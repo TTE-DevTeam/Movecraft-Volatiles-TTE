@@ -52,18 +52,17 @@ public class IgnitionListener implements Listener {
         try {
             final Class<?> magicNumbersClass = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".util.CraftMagicNumbers");
             blockRetrievalMethod = magicNumbersClass.getMethod("getBlock", Material.class);
-            Object fireBlockInstance = blockRetrievalMethod.invoke(Material.FIRE);
+            Object fireBlockInstance = blockRetrievalMethod.invoke(null, Material.FIRE);
             igniteOddsMap = getFieldValue(fireBlockInstance, "igniteOdds");
 
             return (block) -> {
                 if (igniteOddsMap != null && blockRetrievalMethod != null) {
-                    Object blockObj = null;
                     try {
-                        blockObj = blockRetrievalMethod.invoke(block.getType());
+                        Object blockObj = blockRetrievalMethod.invoke(block.getType());
+                        return igniteOddsMap.getInt(blockObj) > 0;
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         return block.getType().isBurnable();
                     }
-                    return igniteOddsMap.getInt(blockObj) > 0;
                 } else {
                     return block.getType().isBurnable();
                 }
