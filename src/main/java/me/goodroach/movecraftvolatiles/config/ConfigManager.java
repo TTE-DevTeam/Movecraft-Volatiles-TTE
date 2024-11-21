@@ -28,18 +28,23 @@ public class ConfigManager {
         }
 
         for (var entry : section.getValues(false).entrySet()) {
-            EnumSet<Material> materials = Tags.parseMaterials(entry.getKey());
-            if (materials != null) {
-                for (Material material : materials) {
-                    var blockSection = section.getConfigurationSection(entry.getKey());
-                    double explosivePower = blockSection.getDouble("ExplosivePower", 1.0);
-                    double explosionProbability = blockSection.getDouble("ExplosionProbability", 1.0);
-                    boolean isIncendiary = blockSection.getBoolean("IsIncendiary", false);
-                    boolean requireCraft = blockSection.getBoolean("IsCraftPresenceNecessary", true);
-                    byte bitmask = (byte) blockSection.getInt("EventMask", VolatileBlock.EReactionType.BLOCK_BURNT.maskValue());
-                    MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary, requireCraft, bitmask);
+            try {
+                EnumSet<Material> materials = Tags.parseMaterials(entry.getKey());
+                if (materials != null) {
+                    for (Material material : materials) {
+                        var blockSection = section.getConfigurationSection(entry.getKey());
+                        double explosivePower = blockSection.getDouble("ExplosivePower", 1.0);
+                        double explosionProbability = blockSection.getDouble("ExplosionProbability", 1.0);
+                        boolean isIncendiary = blockSection.getBoolean("IsIncendiary", false);
+                        boolean requireCraft = blockSection.getBoolean("IsCraftPresenceNecessary", true);
+                        byte bitmask = (byte) blockSection.getInt("EventMask", VolatileBlock.EReactionType.BLOCK_BURNT.maskValue());
+                        MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary, requireCraft, bitmask);
+                    }
+                } else {
+                    MovecraftVolatiles.getInstance().getLogger().log(
+                            Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + entry.getKey());
                 }
-            } else {
+            } catch(IllegalArgumentException iae) {
                 MovecraftVolatiles.getInstance().getLogger().log(
                         Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + entry.getKey());
             }
