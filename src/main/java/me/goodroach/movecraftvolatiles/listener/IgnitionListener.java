@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -127,9 +128,13 @@ public class IgnitionListener implements Listener {
             return false;
         }
 
-        final Block nextBlock = getNextBurnableBlock(affectedBlock);
-        if (nextBlock != null) {
-            return false;
+        Block nextBlock = getNextBurnableBlock(affectedBlock);
+        if (nextBlock == null) {
+            if (eventType != VolatileBlock.EReactionType.BLOCK_CATCH_FIRE) {
+                nextBlock = affectedBlock;
+            } else {
+                return false;
+            }
         }
         final Craft craft = fastNearestPlayerCraftToLoc(nextBlock.getLocation());
         if (volatileBlock.requiresCraft()) {
@@ -141,6 +146,10 @@ public class IgnitionListener implements Listener {
             }
         }
 
+        // TODO: Remove block, then check for explosion, if necessary, revert that
+        BlockData blockData = nextBlock.getBlockData().clone();
+        nextBlock.breakNaturally(false);
+
         final boolean explosionSuccessful = nextBlock.getWorld().createExplosion(nextBlock.getLocation(), (float) volatileBlock.explosivePower(), volatileBlock.isIncendiary());
         if (explosionSuccessful) {
             setEventCancelled.accept(true);
@@ -150,7 +159,10 @@ public class IgnitionListener implements Listener {
                     damagedCraft((PlayerCraft) craft, cause.getUniqueId());
                 }
             }
+
             return true;
+        } else {
+            nextBlock.setBlockData(blockData);
         }
         return false;
     }
@@ -193,8 +205,26 @@ public class IgnitionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onTNTPrimeEvent(TNTPrimeEvent event) {
         // This is different, here, the TNT is the burnt block
-        if (event.getCause() != TNTPrimeEvent.PrimeCause.FIRE || event.getBlock() == null) {
+        if (event.getBlock() == null) {
             return;
+        }
+
+        VolatileBlock.EReactionType reactionType = VolatileBlock.EReactionType.BLOCK_EXPLODED;
+        if (event.getBlock().getType() == Material.TNT) {
+            switch(event.getCause()) {
+                case FIRE:
+                    reactionType = VolatileBlock.EReactionType.BLOCK_CATCH_FIRE;
+                    break;
+                case PROJECTILE:
+                    reactionType = VolatileBlock.EReactionType.BLOCK_HIT_BY_BURNING_PROJECTILE;
+                    break;
+                case BLOCK_BREAK:
+                case EXPLOSION:
+                    reactionType = VolatileBlock.EReactionType.BLOCK_EXPLODED;
+                    break;
+                default:
+                    return;
+            }
         }
 
         final Block block = event.getBlock();
