@@ -210,7 +210,15 @@ public class IgnitionListener implements Listener {
         }
 
         VolatileBlock.EReactionType reactionType = VolatileBlock.EReactionType.BLOCK_EXPLODED;
+        Consumer<Boolean> setCancelledFunction = event::setCancelled;
         if (event.getBlock().getType() == Material.TNT) {
+            setCancelledFunction = (cancelled) -> {
+              event.setCancelled(cancelled);
+              if (cancelled) {
+                  event.getBlock().breakNaturally(false);
+              }
+            };
+
             switch(event.getCause()) {
                 case FIRE:
                     reactionType = VolatileBlock.EReactionType.BLOCK_CATCH_FIRE;
@@ -228,7 +236,7 @@ public class IgnitionListener implements Listener {
         }
 
         final Block block = event.getBlock();
-        this.handleVolatile(event::setCancelled, block, event.getPrimingEntity(), VolatileBlock.EReactionType.BLOCK_EXPLODED);
+        this.handleVolatile(setCancelledFunction, block, event.getPrimingEntity(), VolatileBlock.EReactionType.BLOCK_EXPLODED);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
