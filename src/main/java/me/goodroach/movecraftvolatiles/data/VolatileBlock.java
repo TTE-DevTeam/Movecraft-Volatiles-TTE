@@ -5,7 +5,8 @@ public record VolatileBlock(
     double explosionProbability,
     boolean isIncendiary,
     boolean requiresCraft,
-    byte eventMask
+    byte eventMask,
+    String commandToRun
 ) {
 
     public static enum EReactionType {
@@ -35,12 +36,13 @@ public record VolatileBlock(
         }
     }
 
-    public VolatileBlock(double explosivePower, double explosionProbability, boolean isIncendiary, boolean requiresCraft, byte eventMask) {
+    public VolatileBlock(double explosivePower, double explosionProbability, boolean isIncendiary, boolean requiresCraft, byte eventMask, String commandToRun) {
         this.explosivePower = explosivePower;
         this.explosionProbability = explosionProbability;
         this.isIncendiary = isIncendiary;
         this.requiresCraft = requiresCraft;
         this.eventMask = eventMask;
+        this.commandToRun = commandToRun;
     }
 
 }

@@ -1,5 +1,6 @@
 package me.goodroach.movecraftvolatiles.listener;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import me.goodroach.movecraftvolatiles.MovecraftVolatiles;
 import me.goodroach.movecraftvolatiles.data.VolatileBlock;
@@ -20,6 +21,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -153,6 +155,12 @@ public class IgnitionListener implements Listener {
         if (explosionSuccessful) {
             setEventCancelled.accept(true);
 
+            if (volatileBlock.commandToRun() != null && !volatileBlock.commandToRun().isBlank()) {
+                String command = getCommand(affectedBlock, cause, volatileBlock);
+
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+            }
+
             if (craft != null && craft instanceof PlayerCraft) {
                 if (cause != null) {
                     damagedCraft((PlayerCraft) craft, cause.getUniqueId());
@@ -164,6 +172,19 @@ public class IgnitionListener implements Listener {
             affectedBlock.setBlockData(blockData);
         }
         return false;
+    }
+
+    private static @NotNull String getCommand(Block affectedBlock, Entity cause, VolatileBlock volatileBlock) {
+        String command = volatileBlock.commandToRun();
+
+        command = command.replaceAll("%POS_WORLD%", affectedBlock.getWorld().getName());
+        command = command.replaceAll("%POS_X%", "" + affectedBlock.getLocation().getBlockX());
+        command = command.replaceAll("%POS_Y%", "" + affectedBlock.getLocation().getBlockX());
+        command = command.replaceAll("%POS_Z%", "" + affectedBlock.getLocation().getBlockX());
+        if (cause != null) {
+            command = command.replaceAll("%CAUSER_UUID", cause.getUniqueId().toString());
+        }
+        return command;
     }
 
     static void damagedCraft(@NotNull PlayerCraft craft, UUID playerUUID) {

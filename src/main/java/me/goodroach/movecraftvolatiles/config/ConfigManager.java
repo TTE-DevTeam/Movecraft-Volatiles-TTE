@@ -38,7 +38,8 @@ public class ConfigManager {
                         boolean isIncendiary = blockSection.getBoolean("IsIncendiary", false);
                         boolean requireCraft = blockSection.getBoolean("IsCraftPresenceNecessary", true);
                         byte bitmask = (byte) blockSection.getInt("EventMask", VolatileBlock.EReactionType.BLOCK_BURNT.maskValue());
-                        MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary, requireCraft, bitmask);
+                        String commandToRun = blockSection.getString("CommandToRun", null);
+                        MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary, requireCraft, bitmask, commandToRun);
                     }
                 } else {
                     MovecraftVolatiles.getInstance().getLogger().log(

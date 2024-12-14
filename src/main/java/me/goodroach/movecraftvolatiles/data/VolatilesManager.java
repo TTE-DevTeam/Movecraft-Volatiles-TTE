@@ -22,8 +22,8 @@ public class VolatilesManager {
         return volatileBlockMap.keySet().contains(material);
     }
 
-    public void addVolatileBlock(Material m, double power, double probability, boolean incendiary, boolean requireCraft, byte typeMask) {
-        volatileBlockMap.put(m, new VolatileBlock(power, probability, incendiary, requireCraft, typeMask));
+    public void addVolatileBlock(Material m, double power, double probability, boolean incendiary, boolean requireCraft, byte typeMask, String commandToRun) {
+        volatileBlockMap.put(m, new VolatileBlock(power, probability, incendiary, requireCraft, typeMask, commandToRun));
     }
 }
 
