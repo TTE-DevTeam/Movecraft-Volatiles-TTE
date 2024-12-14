@@ -89,7 +89,7 @@ public class IgnitionListener implements Listener {
         return obj;
     }
 
-    static BlockFace[] CHECK_SIDES = new BlockFace[] {BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+    static BlockFace[] CHECK_SIDES = new BlockFace[] {BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.UP, BlockFace.DOWN};
 
     static Block getNextBurnableBlock(final Block block) {
         // A block can burn, when Blocks.Fire#canBurn() returns true
@@ -128,29 +128,28 @@ public class IgnitionListener implements Listener {
             return false;
         }
 
-        Block nextBlock = getNextBurnableBlock(affectedBlock);
-        if (nextBlock == null) {
+        if (affectedBlock == null) {
             if (eventType != VolatileBlock.EReactionType.BLOCK_CATCH_FIRE) {
-                nextBlock = affectedBlock;
+                affectedBlock = affectedBlock;
             } else {
                 return false;
             }
         }
-        final Craft craft = fastNearestPlayerCraftToLoc(nextBlock.getLocation());
+        final Craft craft = fastNearestPlayerCraftToLoc(affectedBlock.getLocation());
         if (volatileBlock.requiresCraft()) {
             if (craft == null) {
                 return false;
             }
-            if (!craft.getHitBox().contains(MathUtils.bukkit2MovecraftLoc(nextBlock.getLocation()))) {
+            if (!craft.getHitBox().contains(MathUtils.bukkit2MovecraftLoc(affectedBlock.getLocation()))) {
                 return false;
             }
         }
 
-        // TODO: Remove block, then check for explosion, if necessary, revert that
-        BlockData blockData = nextBlock.getBlockData().clone();
-        nextBlock.breakNaturally(false);
+        // Remove block, then check for explosion, if necessary, revert that. Revert happens later
+        final BlockData blockData = affectedBlock.getBlockData().clone();
+        affectedBlock.breakNaturally(false);
 
-        final boolean explosionSuccessful = nextBlock.getWorld().createExplosion(nextBlock.getLocation(), (float) volatileBlock.explosivePower(), volatileBlock.isIncendiary());
+        final boolean explosionSuccessful = affectedBlock.getWorld().createExplosion(affectedBlock.getLocation(), (float) volatileBlock.explosivePower(), volatileBlock.isIncendiary());
         if (explosionSuccessful) {
             setEventCancelled.accept(true);
 
@@ -162,7 +161,7 @@ public class IgnitionListener implements Listener {
 
             return true;
         } else {
-            nextBlock.setBlockData(blockData);
+            affectedBlock.setBlockData(blockData);
         }
         return false;
     }
@@ -195,10 +194,10 @@ public class IgnitionListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockBurnt(BlockBurnEvent event) {
+        // The relevant block is the one that was destroyed by fire
         final Block block = event.getBlock();
-        final Block volatileBlock = getNextBurnableBlock(block);
-        if (volatileBlock != null)
-            this.handleVolatile(event::setCancelled, volatileBlock, null, VolatileBlock.EReactionType.BLOCK_BURNT);
+        if (block != null)
+            this.handleVolatile(event::setCancelled, block, null, VolatileBlock.EReactionType.BLOCK_BURNT);
     }
 
     // Support volatile tnt too!
