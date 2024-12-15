@@ -1,6 +1,5 @@
 package me.goodroach.movecraftvolatiles.listener;
 
-import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import me.goodroach.movecraftvolatiles.MovecraftVolatiles;
 import me.goodroach.movecraftvolatiles.data.VolatileBlock;
@@ -21,8 +20,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,6 +33,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.logging.Level;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -151,13 +149,17 @@ public class IgnitionListener implements Listener {
         final BlockData blockData = affectedBlock.getBlockData().clone();
         affectedBlock.breakNaturally(false);
 
-        final boolean explosionSuccessful = affectedBlock.getWorld().createExplosion(affectedBlock.getLocation(), (float) volatileBlock.explosivePower(), volatileBlock.isIncendiary());
+        final boolean explosionSuccessful = affectedBlock.getWorld().createExplosion(
+                affectedBlock.getLocation().add(0.5, 0.5, 0.5),
+                (float) volatileBlock.explosivePower(),
+                volatileBlock.isIncendiary()
+        );
         if (explosionSuccessful) {
             setEventCancelled.accept(true);
 
             if (volatileBlock.commandToRun() != null && !volatileBlock.commandToRun().isBlank()) {
                 String command = getCommand(affectedBlock, cause, volatileBlock);
-
+                MovecraftVolatiles.getInstance().getLogger().log(Level.INFO, "Command to run: " + command);
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             }
 
@@ -178,9 +180,9 @@ public class IgnitionListener implements Listener {
         String command = volatileBlock.commandToRun();
 
         command = command.replaceAll("%POS_WORLD%", affectedBlock.getWorld().getName());
-        command = command.replaceAll("%POS_X%", "" + affectedBlock.getLocation().getBlockX());
-        command = command.replaceAll("%POS_Y%", "" + affectedBlock.getLocation().getBlockX());
-        command = command.replaceAll("%POS_Z%", "" + affectedBlock.getLocation().getBlockX());
+        command = command.replaceAll("%POS_X%", "" + (affectedBlock.getLocation().getBlockX() + 0.5D));
+        command = command.replaceAll("%POS_Y%", "" + (affectedBlock.getLocation().getBlockX() + 0.5D));
+        command = command.replaceAll("%POS_Z%", "" + (affectedBlock.getLocation().getBlockX() + 0.5D));
         if (cause != null) {
             command = command.replaceAll("%CAUSER_UUID", cause.getUniqueId().toString());
         }
