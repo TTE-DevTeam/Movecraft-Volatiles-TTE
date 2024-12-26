@@ -23,13 +23,12 @@ public class VolatilesManager {
         return volatileBlockMap.keySet().contains(material);
     }
 
-    public void addVolatileBlock(Material m, double power, double probability, boolean incendiary, boolean requireCraft, byte typeMask, String commandToRun) {
-        VolatileBlock volatileBlock = new VolatileBlock(power, probability, incendiary, requireCraft, typeMask, commandToRun);
+    public void addVolatileBlock(VolatileBlock volatileBlock, Material material) {
         for (VolatileBlock.EReactionType type : VolatileBlock.EReactionType.values()) {
             if (type.coveredByMask(volatileBlock)) {
                 volatileBlockMap.computeIfAbsent(type, (t) -> {
                     return new HashMap<>();
-                }).put(m, volatileBlock);
+                }).put(material, volatileBlock);
             }
         }
     }

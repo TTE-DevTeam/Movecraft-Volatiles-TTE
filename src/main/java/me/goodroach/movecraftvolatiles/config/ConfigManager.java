@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ConfigManager {
@@ -22,32 +23,37 @@ public class ConfigManager {
 
     public void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
-        var section = config.getConfigurationSection("VolatileBlocks");
-        if (section == null) {
-            return;
-        }
 
-        for (var entry : section.getValues(false).entrySet()) {
-            try {
-                EnumSet<Material> materials = Tags.parseMaterials(entry.getKey());
-                if (materials != null) {
-                    for (Material material : materials) {
-                        var blockSection = section.getConfigurationSection(entry.getKey());
-                        double explosivePower = blockSection.getDouble("ExplosivePower", 1.0);
-                        double explosionProbability = blockSection.getDouble("ExplosionProbability", 1.0);
-                        boolean isIncendiary = blockSection.getBoolean("IsIncendiary", false);
-                        boolean requireCraft = blockSection.getBoolean("IsCraftPresenceNecessary", true);
-                        byte bitmask = (byte) blockSection.getInt("EventMask", VolatileBlock.EReactionType.BLOCK_BURNT.maskValue());
-                        String commandToRun = blockSection.getString("CommandToRun", null);
-                        MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(material, explosivePower, explosionProbability, isIncendiary, requireCraft, bitmask, commandToRun);
+        List<VolatileBlock> volatiles = (List<VolatileBlock>) config.getList("VolatileBlocks");
+        for (VolatileBlock volatileBlock : volatiles) {
+            EnumSet<Material> materials;
+            if (volatileBlock.blockMask().contains(",")) {
+                materials = EnumSet.noneOf(Material.class);
+                String[] strings = volatileBlock.blockMask().split(",");
+                for (String mat : strings) {
+                    try {
+                        materials.addAll(Tags.parseMaterials(mat));
+                    } catch (IllegalArgumentException iae) {
+                        MovecraftVolatiles.getInstance().getLogger().log(
+                                Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + mat);
                     }
-                } else {
-                    MovecraftVolatiles.getInstance().getLogger().log(
-                            Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + entry.getKey());
                 }
-            } catch(IllegalArgumentException iae) {
-                MovecraftVolatiles.getInstance().getLogger().log(
-                        Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + entry.getKey());
+            } else {
+                try {
+                    materials = Tags.parseMaterials(volatileBlock.blockMask());
+                } catch (IllegalArgumentException iae) {
+                    MovecraftVolatiles.getInstance().getLogger().log(
+                            Level.WARNING, "[ERROR] Invalid Material or Tag: " + ChatColor.RED + volatileBlock.blockMask());
+                    continue;
+                }
+            }
+
+            if (materials.isEmpty()) {
+                continue;
+            }
+
+            for (Material material : materials) {
+                MovecraftVolatiles.getInstance().getVolatilesManager().addVolatileBlock(volatileBlock, material);
             }
         }
     }
