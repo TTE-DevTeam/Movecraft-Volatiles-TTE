@@ -181,8 +181,8 @@ public class IgnitionListener implements Listener {
 
         command = command.replaceAll("%POS_WORLD%", affectedBlock.getWorld().getName());
         command = command.replaceAll("%POS_X%", "" + (affectedBlock.getLocation().getBlockX() + 0.5D));
-        command = command.replaceAll("%POS_Y%", "" + (affectedBlock.getLocation().getBlockX() + 0.5D));
-        command = command.replaceAll("%POS_Z%", "" + (affectedBlock.getLocation().getBlockX() + 0.5D));
+        command = command.replaceAll("%POS_Y%", "" + (affectedBlock.getLocation().getBlockY() + 0.5D));
+        command = command.replaceAll("%POS_Z%", "" + (affectedBlock.getLocation().getBlockZ() + 0.5D));
         if (cause != null) {
             command = command.replaceAll("%CAUSER_UUID", cause.getUniqueId().toString());
         }
