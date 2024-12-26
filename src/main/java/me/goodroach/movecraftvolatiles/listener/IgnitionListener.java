@@ -16,12 +16,14 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,6 +32,8 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.TNTPrimeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,6 +52,8 @@ public class IgnitionListener implements Listener {
 
     static @Nullable Method blockRetrievalMethod;
     static @Nullable Object2IntMap<Object> igniteOddsMap;
+
+    static final String VOLATILE_EXPLOSION_METADATA_FLAG = "Movecraft-Volatiles-TTE-ExplosionTag";
 
     static Function<Block, Boolean> buildCanBlockBurnFunction() {
         try {
@@ -149,11 +155,7 @@ public class IgnitionListener implements Listener {
         final BlockData blockData = affectedBlock.getBlockData().clone();
         affectedBlock.breakNaturally(false);
 
-        final boolean explosionSuccessful = affectedBlock.getWorld().createExplosion(
-                affectedBlock.getLocation().add(0.5, 0.5, 0.5),
-                (float) volatileBlock.explosivePower(),
-                volatileBlock.isIncendiary()
-        );
+        final boolean explosionSuccessful = createExplosion(affectedBlock.getWorld(), affectedBlock.getLocation().add(0.5, 0.5, 0.5), volatileBlock);
         if (explosionSuccessful) {
             setEventCancelled.accept(true);
 
@@ -174,6 +176,27 @@ public class IgnitionListener implements Listener {
             affectedBlock.setBlockData(blockData);
         }
         return false;
+    }
+
+    protected static boolean createExplosion(@NotNull World world, Location location, VolatileBlock volatileBlock) {
+        TNTPrimed tntPrimed = world.spawn(location, TNTPrimed.class);
+        if (tntPrimed == null) {
+            return false;
+        }
+
+        tntPrimed.setInvisible(true);
+        tntPrimed.setIsIncendiary(volatileBlock.isIncendiary());
+        tntPrimed.setYield((float)volatileBlock.explosivePower());
+        tntPrimed.setNoPhysics(false);
+        tntPrimed.setSilent(true);
+        tntPrimed.setMetadata(VOLATILE_EXPLOSION_METADATA_FLAG, new FixedMetadataValue(MovecraftVolatiles.getInstance(), true));
+//
+//        affectedBlock.getWorld().createExplosion(
+//                affectedBlock.getLocation().add(0.5, 0.5, 0.5),
+//                (float) volatileBlock.explosivePower(),
+//                volatileBlock.isIncendiary()
+//        );
+        return true;
     }
 
     private static @NotNull String getCommand(Block affectedBlock, Entity cause, VolatileBlock volatileBlock) {
