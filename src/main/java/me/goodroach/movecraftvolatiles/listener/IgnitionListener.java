@@ -189,6 +189,7 @@ public class IgnitionListener implements Listener {
         tntPrimed.setYield((float)volatileBlock.explosivePower());
         tntPrimed.setNoPhysics(false);
         tntPrimed.setSilent(true);
+        tntPrimed.setFuseTicks(0);
         tntPrimed.setMetadata(VOLATILE_EXPLOSION_METADATA_FLAG, new FixedMetadataValue(MovecraftVolatiles.getInstance(), true));
 //
 //        affectedBlock.getWorld().createExplosion(
