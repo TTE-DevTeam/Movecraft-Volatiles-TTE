@@ -1,11 +1,18 @@
 package me.goodroach.movecraftvolatiles;
 
 import me.goodroach.movecraftvolatiles.config.ConfigManager;
+import me.goodroach.movecraftvolatiles.data.VolatileBlock;
 import me.goodroach.movecraftvolatiles.data.VolatilesManager;
 import me.goodroach.movecraftvolatiles.listener.IgnitionListener;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MovecraftVolatiles extends JavaPlugin {
+
+    static {
+        ConfigurationSerialization.registerClass(VolatileBlock.class, "VolatileBlock");
+    }
+
     private static MovecraftVolatiles instance;
     private ConfigManager configManager;
     private VolatilesManager volatilesManager;

@@ -1,13 +1,23 @@
 package me.goodroach.movecraftvolatiles.data;
 
-public record VolatileBlock(
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.util.NumberConversions;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@SerializableAs("VolatileBlock")
+public record VolatileBlock (
+    String blockMask,
     double explosivePower,
     double explosionProbability,
     boolean isIncendiary,
     boolean requiresCraft,
     byte eventMask,
     String commandToRun
-) {
+) implements ConfigurationSerializable  {
 
     public static enum EReactionType {
 
@@ -36,7 +46,8 @@ public record VolatileBlock(
         }
     }
 
-    public VolatileBlock(double explosivePower, double explosionProbability, boolean isIncendiary, boolean requiresCraft, byte eventMask, String commandToRun) {
+    public VolatileBlock(String blockMask, double explosivePower, double explosionProbability, boolean isIncendiary, boolean requiresCraft, byte eventMask, String commandToRun) {
+        this.blockMask = blockMask;
         this.explosivePower = explosivePower;
         this.explosionProbability = explosionProbability;
         this.isIncendiary = isIncendiary;
@@ -44,6 +55,45 @@ public record VolatileBlock(
         this.eventMask = eventMask;
         this.commandToRun = commandToRun;
     }
+
+    public @NotNull Map<String, Object> serialize() {
+        Map<String, Object> data = new HashMap();
+
+        data.put("Block", this.blockMask);
+        data.put("ExplosionPower", this.explosivePower);
+        data.put("ExplosionProbability", this.explosionProbability);
+        data.put("IsIncendiary", this.isIncendiary);
+        data.put("IsCraftPresenceNecessary", this.requiresCraft);
+        data.put("EventMask", this.eventMask);
+        data.put("CommandToRun", this.commandToRun);
+
+        return data;
+    }
+
+    public static @NotNull VolatileBlock deserialize(@NotNull Map<String, Object> args) {
+        Object objectIncendiary = args.getOrDefault("IsIncendiary", null);
+        boolean incendiary = false;
+        if (objectIncendiary != null && (objectIncendiary instanceof Boolean)) {
+            incendiary = ((Boolean) objectIncendiary).booleanValue();
+        }
+
+        Object objectRequiresCraft = args.getOrDefault("IsCraftPresenceNecessary", null);
+        boolean craftIsNecessary = false;
+        if (objectRequiresCraft != null && (objectRequiresCraft instanceof Boolean)) {
+            craftIsNecessary = ((Boolean) objectRequiresCraft).booleanValue();
+        }
+
+        return new VolatileBlock(
+                String.valueOf(args.getOrDefault("Block", "")),
+                NumberConversions.toDouble(args.get("ExplosionPower")),
+                NumberConversions.toDouble(args.get("ExplosionProbability")),
+                incendiary,
+                craftIsNecessary,
+                NumberConversions.toByte(args.get("EventMask")),
+                String.valueOf(args.getOrDefault("CommandToRun", ""))
+        );
+    }
+
 
 }
 
