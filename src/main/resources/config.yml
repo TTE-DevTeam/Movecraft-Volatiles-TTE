@@ -8,7 +8,7 @@ VolatileBlocks:
   #Standard flyblock volatiles, triggers when blocks are burnt
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
-    ExplosivePower: 1.5
+    ExplosionPower: 1.5
     ExplosionProbability: 0.33
     IsIncendiary: true
     IsCraftPresenceNecessary: false
@@ -16,7 +16,7 @@ VolatileBlocks:
   #Flyblocks when hit by projectiles
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
-    ExplosivePower: 3.0
+    ExplosionPower: 3.0
     ExplosionProbability: 0.33
     IsIncendiary: true
     IsCraftPresenceNecessary: false
@@ -24,14 +24,14 @@ VolatileBlocks:
   #Ammunition blocks detonate on explosion, ignition and burning projectile hits
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/munitions"
-    ExplosivePower: 16.0
+    ExplosionPower: 16.0
     ExplosionProbability: 0.8
     IsIncendiary: true
     IsCraftPresenceNecessary: false
     EventMask: 22
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/tnt"
-    ExplosivePower: 16.0
+    ExplosionPower: 16.0
     ExplosionProbability: 0.8
     IsIncendiary: false
     IsCraftPresenceNecessary: false
