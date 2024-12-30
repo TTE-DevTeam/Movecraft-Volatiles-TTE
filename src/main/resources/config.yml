@@ -2,9 +2,11 @@ VolatileBlocks:
   #Mask values:
   # - 1:  Block catches fire / begins to burn
   # - 2:  Block burnt by fire
-  # - 4:  Block got caught in a explosion, or when a tnt is primed and the block is a tnt
+  # - 4:  Block got caught in a explosion (that was caused by null or a block), or when a tnt is primed and the block is a tnt
   # - 8:  Block got hit by a projectile
   # - 16: Block got hit by a burning projectile
+  # - 32: Block got caught in a explosion caused by an entity
+  # - 64: Block got caught in a explosion caused by another volatile reaction
   #Standard flyblock volatiles, triggers when blocks are burnt
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
@@ -28,11 +30,11 @@ VolatileBlocks:
     ExplosionProbability: 0.8
     IsIncendiary: true
     IsCraftPresenceNecessary: false
-    EventMask: 22
+    EventMask: 54
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/tnt"
     ExplosionPower: 16.0
     ExplosionProbability: 0.8
     IsIncendiary: false
     IsCraftPresenceNecessary: false
-    EventMask: 22
+    EventMask: 54

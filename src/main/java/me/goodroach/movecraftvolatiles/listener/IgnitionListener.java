@@ -31,9 +31,9 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.TNTPrimeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -255,7 +255,7 @@ public class IgnitionListener implements Listener {
             return;
         }
 
-        VolatileBlock.EReactionType reactionType = VolatileBlock.EReactionType.BLOCK_EXPLODED;
+        VolatileBlock.EReactionType reactionType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK;
         Consumer<Boolean> setCancelledFunction = event::setCancelled;
         if (event.getBlock().getType() == Material.TNT) {
             setCancelledFunction = (cancelled) -> {
@@ -274,7 +274,7 @@ public class IgnitionListener implements Listener {
                     break;
                 case BLOCK_BREAK:
                 case EXPLOSION:
-                    reactionType = VolatileBlock.EReactionType.BLOCK_EXPLODED;
+                    reactionType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK;
                     break;
                 default:
                     return;
@@ -282,7 +282,7 @@ public class IgnitionListener implements Listener {
         }
 
         final Block block = event.getBlock();
-        this.handleVolatile(setCancelledFunction, block, event.getPrimingEntity(), VolatileBlock.EReactionType.BLOCK_EXPLODED);
+        this.handleVolatile(setCancelledFunction, block, event.getPrimingEntity(), VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -326,7 +326,19 @@ public class IgnitionListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockExploded(BlockExplodeEvent event) {
         event.blockList().removeIf((block) -> {
-            return handleVolatile((b) -> {}, block, null, VolatileBlock.EReactionType.BLOCK_EXPLODED);
+            return handleVolatile((b) -> {}, block, null, VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK);
+        });
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityExploded(EntityExplodeEvent event) {
+        VolatileBlock.EReactionType eventType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_ENTITY;
+        if (event.getEntity() != null && event.getEntity() instanceof TNTPrimed && event.getEntity().hasMetadata(VOLATILE_EXPLOSION_METADATA_FLAG)) {
+            eventType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_VOLATILES;
+        }
+        final VolatileBlock.EReactionType finalEventType = eventType;
+        event.blockList().removeIf((block) -> {
+            return handleVolatile((b) -> {}, block, null, finalEventType);
         });
     }
 
