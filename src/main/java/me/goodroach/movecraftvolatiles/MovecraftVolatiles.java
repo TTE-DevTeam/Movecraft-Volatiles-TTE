@@ -9,16 +9,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MovecraftVolatiles extends JavaPlugin {
 
-    static {
-        ConfigurationSerialization.registerClass(VolatileBlock.class, "VolatileBlock");
-    }
-
     private static MovecraftVolatiles instance;
     private ConfigManager configManager;
     private VolatilesManager volatilesManager;
 
     @Override
     public void onEnable() {
+        ConfigurationSerialization.registerClass(VolatileBlock.class, "VolatileBlock");
+        
         instance = this;
 
         volatilesManager = new VolatilesManager();
