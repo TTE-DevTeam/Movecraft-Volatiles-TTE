@@ -4,39 +4,42 @@ VolatileBlocks:
   #Mask values:
   # - 1:  Block catches fire / begins to burn
   # - 2:  Block burnt by fire
-  # - 4:  Block got caught in a explosion (that was caused by null or a block), or when a tnt is primed and the block is a tnt
+  # - 4:  Block got caught in a explosion caused by a block (e.g. bed), or when a tnt is primed and the block is a tnt
   # - 8:  Block got hit by a projectile
   # - 16: Block got hit by a burning projectile
-  # - 32: Block got caught in a explosion caused by an entity
-  # - 64: Block got caught in a explosion caused by another volatile reaction
+  # - 32: Block got caught in a explosion caused by a entity (e.g. a creeper or tnt)
+  # - 64: Block got caught in a explosion caused by volatiles (WARNING: this can cause massive lag due to chain reactions!)
   #Standard flyblock volatiles, triggers when blocks are burnt
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
-    ExplosionPower: 1.5
-    ExplosionProbability: 0.33
+    ExplosionPower: 3.0
+    ExplosionProbability: 0.165
     IsIncendiary: true
+    IncendiaryProbability: 0.25
     IsCraftPresenceNecessary: false
     EventMask: 3
   #Flyblocks when hit by projectiles
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
-    ExplosionPower: 3.0
+    ExplosionPower: 6.0
     ExplosionProbability: 0.33
     IsIncendiary: true
+    IncendiaryProbability: 0.5
     IsCraftPresenceNecessary: false
     EventMask: 16
   #Ammunition blocks detonate on explosion, ignition and burning projectile hits
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/munitions"
-    ExplosionPower: 16.0
+    ExplosionPower: 12.0
     ExplosionProbability: 0.8
     IsIncendiary: true
+    IncendiaryProbability: 0.33
     IsCraftPresenceNecessary: false
-    EventMask: 54
+    EventMask: 22
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/tnt"
-    ExplosionPower: 16.0
+    ExplosionPower: 5.0
     ExplosionProbability: 0.8
     IsIncendiary: false
     IsCraftPresenceNecessary: false
-    EventMask: 54
+    EventMask: 22
