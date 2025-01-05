@@ -1,15 +1,15 @@
 package me.goodroach.movecraftvolatiles.listener;
 
 import me.goodroach.movecraftvolatiles.config.Settings;
-import net.countercraft.movecraft.craft.Craft;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Arrow;
+import org.bukkit.block.data.type.Fire;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,7 +21,7 @@ public class ArrowImpactListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onArrowHitBlock(final ProjectileHitEvent event) {
         Entity projectile = event.getEntity();
-        if (!(projectile instanceof Arrow)) {
+        if (!(projectile instanceof AbstractArrow) || projectile instanceof Trident) {
             return;
         }
 
@@ -64,6 +64,7 @@ public class ArrowImpactListener implements Listener {
         }
 
         // If successful, remove the arrow
+        // TODO: Place the fire properly
         fireBlock.setType(projectile.getType() == EntityType.SPECTRAL_ARROW ? Material.SOUL_FIRE : Material.FIRE);
         projectile.remove();
         // Since the impact did not actually happen, return
