@@ -185,7 +185,9 @@ public class IgnitionListener implements Listener {
         }
 
         tntPrimed.setInvisible(true);
-        tntPrimed.setIsIncendiary(volatileBlock.isIncendiary());
+        if (volatileBlock.isIncendiary() && (volatileBlock.incendiaryProbability() >= 1.0 || volatileBlock.incendiaryProbability() < Math.random())) {
+            tntPrimed.setIsIncendiary(true);
+        }
         tntPrimed.setYield((float)volatileBlock.explosivePower());
         tntPrimed.setNoPhysics(false);
         tntPrimed.setSilent(true);
@@ -239,7 +241,7 @@ public class IgnitionListener implements Listener {
         return closest;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBurnt(BlockBurnEvent event) {
         // The relevant block is the one that was destroyed by fire
         final Block block = event.getBlock();
@@ -285,9 +287,12 @@ public class IgnitionListener implements Listener {
         this.handleVolatile(setCancelledFunction, block, event.getPrimingEntity(), VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onIgnite(BlockIgniteEvent event) {
-        if (event.getCause() != BlockIgniteEvent.IgniteCause.FIREBALL)
+        if (!(
+                event.getCause() == BlockIgniteEvent.IgniteCause.FIREBALL ||
+                event.getCause() == BlockIgniteEvent.IgniteCause.LIGHTNING
+        ))
             return;
 
         @Nullable
@@ -306,9 +311,9 @@ public class IgnitionListener implements Listener {
             handleVolatile(event::setCancelled, testBlock, ignitingPlayer, VolatileBlock.EReactionType.BLOCK_CATCH_FIRE);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onProjectileHit(ProjectileHitEvent event) {
-        if (event.getHitBlock() == null) {
+        if (event.getHitBlock() == null || event.getEntity().isDead()) {
             return;
         }
 
@@ -323,14 +328,14 @@ public class IgnitionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExploded(BlockExplodeEvent event) {
         event.blockList().removeIf((block) -> {
             return handleVolatile((b) -> {}, block, null, VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK);
         });
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExploded(EntityExplodeEvent event) {
         VolatileBlock.EReactionType eventType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_ENTITY;
         if (event.getEntity() != null && event.getEntity() instanceof TNTPrimed && event.getEntity().hasMetadata(VOLATILE_EXPLOSION_METADATA_FLAG)) {
