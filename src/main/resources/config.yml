@@ -1,3 +1,5 @@
+ArrowsPlaceFire: true
+ArrowsPlaceFireChance: 0.5
 VolatileBlocks:
   #Mask values:
   # - 1:  Block catches fire / begins to burn

@@ -24,6 +24,9 @@ public class ConfigManager {
     public void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
 
+        Settings.enableArrowsPlacingFire = config.getBoolean("ArrowsPlaceFire", true);
+        Settings.arrowsPlaceFireChance = config.getDouble("ArrowsPlaceFireChance", 0.5);
+
         List<VolatileBlock> volatiles = (List<VolatileBlock>) config.getList("VolatileBlocks");
         for (VolatileBlock volatileBlock : volatiles) {
             EnumSet<Material> materials;
