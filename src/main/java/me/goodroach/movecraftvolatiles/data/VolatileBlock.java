@@ -14,6 +14,7 @@ public record VolatileBlock (
     double explosivePower,
     double explosionProbability,
     boolean isIncendiary,
+    double incendiaryProbability,
     boolean requiresCraft,
     byte eventMask,
     String commandToRun
@@ -48,11 +49,12 @@ public record VolatileBlock (
         }
     }
 
-    public VolatileBlock(String blockMask, double explosivePower, double explosionProbability, boolean isIncendiary, boolean requiresCraft, byte eventMask, String commandToRun) {
+    public VolatileBlock(String blockMask, double explosivePower, double explosionProbability, boolean isIncendiary, double incendiaryProbability, boolean requiresCraft, byte eventMask, String commandToRun) {
         this.blockMask = blockMask;
         this.explosivePower = explosivePower;
         this.explosionProbability = explosionProbability;
         this.isIncendiary = isIncendiary;
+        this.incendiaryProbability = incendiaryProbability;
         this.requiresCraft = requiresCraft;
         this.eventMask = eventMask;
         this.commandToRun = commandToRun;
@@ -65,6 +67,7 @@ public record VolatileBlock (
         data.put("ExplosionPower", this.explosivePower);
         data.put("ExplosionProbability", this.explosionProbability);
         data.put("IsIncendiary", this.isIncendiary);
+        data.put("IncendiaryProbability", this.incendiaryProbability);
         data.put("IsCraftPresenceNecessary", this.requiresCraft);
         data.put("EventMask", this.eventMask);
         data.put("CommandToRun", this.commandToRun);
@@ -90,6 +93,7 @@ public record VolatileBlock (
                 NumberConversions.toDouble(args.get("ExplosionPower")),
                 NumberConversions.toDouble(args.get("ExplosionProbability")),
                 incendiary,
+                NumberConversions.toDouble(args.getOrDefault("IncendiaryProbability", 1)),
                 craftIsNecessary,
                 NumberConversions.toByte(args.get("EventMask")),
                 String.valueOf(args.getOrDefault("CommandToRun", ""))
