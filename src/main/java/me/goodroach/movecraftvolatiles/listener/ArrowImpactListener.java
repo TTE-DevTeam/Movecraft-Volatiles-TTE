@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
@@ -68,8 +67,8 @@ public class ArrowImpactListener implements Listener {
         // If successful, remove the arrow
         fireBlock.setType(projectile.getType() == EntityType.SPECTRAL_ARROW ? Material.SOUL_FIRE : Material.FIRE);
         BlockData blockData = fireBlock.getBlockData();
-        if (blockData instanceof MultipleFacing multipleFacing && multipleFacing.getAllowedFaces().contains(face.getOppositeFace())) {
-            multipleFacing.setFace(face.getOppositeFace(), true);
+        if (blockData instanceof Fire fire && fire.getAllowedFaces().contains(face.getOppositeFace())) {
+            fire.setFace(face.getOppositeFace(), true);
         }
         projectile.remove();
         // Since the impact did not actually happen, return
