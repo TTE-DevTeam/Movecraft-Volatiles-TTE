@@ -6,10 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Fire;
+import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -65,11 +64,16 @@ public class ArrowImpactListener implements Listener {
         }
 
         // If successful, remove the arrow
-        fireBlock.setType(projectile.getType() == EntityType.SPECTRAL_ARROW ? Material.SOUL_FIRE : Material.FIRE);
-        BlockData blockData = fireBlock.getBlockData();
-        if (blockData instanceof Fire fire && fire.getAllowedFaces().contains(face.getOppositeFace())) {
-            fire.setFace(face.getOppositeFace(), true);
+        BlockData blockData = Material.FIRE.createBlockData();
+        boolean placeFire = face.getOppositeFace() == BlockFace.DOWN;
+        if (blockData instanceof MultipleFacing multipleFacing && multipleFacing.getAllowedFaces().contains(face.getOppositeFace())) {
+            multipleFacing.setFace(face.getOppositeFace(), true);
+            placeFire = true;
         }
+        if (placeFire) {
+            fireBlock.setBlockData(blockData);
+        }
+
         projectile.remove();
         // Since the impact did not actually happen, return
         event.setCancelled(true);
