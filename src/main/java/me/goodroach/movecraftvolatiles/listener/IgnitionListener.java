@@ -11,6 +11,7 @@ import net.countercraft.movecraft.combat.features.tracking.events.CraftDamagedBy
 import net.countercraft.movecraft.craft.Craft;
 import net.countercraft.movecraft.craft.CraftManager;
 import net.countercraft.movecraft.craft.PlayerCraft;
+import net.countercraft.movecraft.events.CraftCollisionExplosionEvent;
 import net.countercraft.movecraft.util.MathUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -37,14 +38,13 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.logging.Level;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public class IgnitionListener implements Listener {
 
@@ -330,6 +330,10 @@ public class IgnitionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExploded(BlockExplodeEvent event) {
+        Location location = new Location(event.getBlock().getLocation().getWorld(), event.getBlock().getLocation().getBlockX(), event.getBlock().getLocation().getBlockY(), event.getBlock().getLocation().getBlockZ());
+        if (craftCollisionExplosions.remove(location)) {
+            return;
+        }
         event.blockList().removeIf((block) -> {
             return handleVolatile((b) -> {}, block, null, VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_BLOCK);
         });
@@ -345,6 +349,18 @@ public class IgnitionListener implements Listener {
         event.blockList().removeIf((block) -> {
             return handleVolatile((b) -> {}, block, null, finalEventType);
         });
+    }
+
+    static Set<Location> craftCollisionExplosions = Collections.synchronizedSet(new HashSet<>());
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCraftCollisionExplosion(CraftCollisionExplosionEvent event) {
+        // we need to handle craft explosions separately, otherwise they will cause chained volatile reactions
+        final Location location = new Location(event.getLocation().getWorld(), event.getLocation().getBlockX(), event.getLocation().getBlockY(), event.getLocation().getBlockZ());
+        craftCollisionExplosions.add(location);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(MovecraftVolatiles.getInstance(), () -> {
+           craftCollisionExplosions.remove(location);
+        }, 200L);
     }
 
 }
