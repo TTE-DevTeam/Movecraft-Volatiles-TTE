@@ -28,7 +28,9 @@ public record VolatileBlock (
         BLOCK_HIT_BY_PROJECTILE((byte) 8),
         BLOCK_HIT_BY_BURNING_PROJECTILE((byte) 16),
         BLOCK_EXPLOSION_BY_ENTITY((byte) 32),
-        BLOCK_EXPLOSION_BY_VOLATILES((byte) 64);
+        BLOCK_EXPLOSION_BY_VOLATILES((byte) 64),
+        BLOCK_HIT_BY_ARROW((byte) 128),
+        BLOCK_HIT_BY_FLAMING_ARROW((byte) 256);
 
         private final byte bit;
 
