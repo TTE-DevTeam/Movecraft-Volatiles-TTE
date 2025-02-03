@@ -22,6 +22,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -120,12 +121,23 @@ public class IgnitionListener implements Listener {
     }
 
     protected static boolean handleVolatile(Consumer<Boolean> setEventCancelled, Block affectedBlock, Entity cause, final VolatileBlock.EReactionType eventType) {
+        return handleVolatile(setEventCancelled, affectedBlock, cause, new EReactionType[]{eventType});
+    }
+
+    protected static boolean handleVolatile(Consumer<Boolean> setEventCancelled, Block affectedBlock, Entity cause, final VolatileBlock.EReactionType[] eventTypes) {
         VolatileBlock volatileBlock = MovecraftVolatiles.getInstance().getVolatilesManager().getVolatileBlock(eventType, affectedBlock.getType());
         if (volatileBlock == null) {
             return false;
         }
 
-        if (!eventType.coveredByMask(volatileBlock)) {
+        boolean anyEventPassed = false;
+        for (VolatileBlock.EReactionType eventType : eventTypes) {
+            if (eventType.coveredByMask(volatileBlock)) {
+                anyEventPassed = true;
+                break;
+            }            
+        }
+        if (!anyEventPassed) {
             return false;
         }
 
@@ -322,6 +334,8 @@ public class IgnitionListener implements Listener {
             shooter = (Entity) event.getEntity().getShooter();
         }
 
+        final boolean flamingProjectile = event.getEntity().getFireTicks() > 0;
+        final boolean projectileIsArrow = event.getEntity() instanceof AbstractArrow;
         final VolatileBlock.EReactionType reactionType = event.getEntity().getFireTicks() > 0 ? VolatileBlock.EReactionType.BLOCK_HIT_BY_BURNING_PROJECTILE : VolatileBlock.EReactionType.BLOCK_HIT_BY_PROJECTILE;
         if (handleVolatile(event::setCancelled, event.getHitBlock(), shooter, reactionType)) {
             event.getEntity().remove();
