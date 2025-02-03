@@ -11,6 +11,7 @@ import net.countercraft.movecraft.combat.features.tracking.events.CraftDamagedBy
 import net.countercraft.movecraft.craft.Craft;
 import net.countercraft.movecraft.craft.CraftManager;
 import net.countercraft.movecraft.craft.PlayerCraft;
+import net.countercraft.movecraft.craft.type.CraftType;
 import net.countercraft.movecraft.events.CraftCollisionExplosionEvent;
 import net.countercraft.movecraft.util.MathUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -121,24 +122,12 @@ public class IgnitionListener implements Listener {
     }
 
     protected static boolean handleVolatile(Consumer<Boolean> setEventCancelled, Block affectedBlock, Entity cause, final VolatileBlock.EReactionType eventType) {
-        return handleVolatile(setEventCancelled, affectedBlock, cause, new EReactionType[]{eventType});
-    }
-
-    protected static boolean handleVolatile(Consumer<Boolean> setEventCancelled, Block affectedBlock, Entity cause, final VolatileBlock.EReactionType[] eventTypes) {
         VolatileBlock volatileBlock = MovecraftVolatiles.getInstance().getVolatilesManager().getVolatileBlock(eventType, affectedBlock.getType());
         if (volatileBlock == null) {
             return false;
         }
 
-        boolean anyEventPassed = false;
-        for (VolatileBlock.EReactionType eventType : eventTypes) {
-            if (eventType.coveredByMask(volatileBlock)) {
-                anyEventPassed = true;
-                break;
-            }            
-        }
-        if (!anyEventPassed) {
-            return false;
+        if (!eventType.coveredByMask(volatileBlock)) {
         }
 
         double randomNumber = Math.random();
@@ -154,11 +143,22 @@ public class IgnitionListener implements Listener {
             }
         }
         final Craft craft = fastNearestPlayerCraftToLoc(affectedBlock.getLocation());
+
         if (volatileBlock.requiresCraft()) {
             if (craft == null) {
                 return false;
             }
             if (!craft.getHitBox().contains(MathUtils.bukkit2MovecraftLoc(affectedBlock.getLocation()))) {
+                return false;
+            }
+        }
+
+        if (craft != null && !volatileBlock.craftTypeList().isEmpty()) {
+            boolean inList = volatileBlock.craftTypeList().contains(craft.getType().getStringProperty(CraftType.NAME).toUpperCase());
+            if (volatileBlock.listIsBlackList() && inList) {
+                return false;
+            }
+            if (!volatileBlock.listIsBlackList() && !inList) {
                 return false;
             }
         }
@@ -336,7 +336,15 @@ public class IgnitionListener implements Listener {
 
         final boolean flamingProjectile = event.getEntity().getFireTicks() > 0;
         final boolean projectileIsArrow = event.getEntity() instanceof AbstractArrow;
-        final VolatileBlock.EReactionType reactionType = event.getEntity().getFireTicks() > 0 ? VolatileBlock.EReactionType.BLOCK_HIT_BY_BURNING_PROJECTILE : VolatileBlock.EReactionType.BLOCK_HIT_BY_PROJECTILE;
+
+        VolatileBlock.EReactionType reactionType;
+
+        if (projectileIsArrow) {
+            reactionType = flamingProjectile ? VolatileBlock.EReactionType.BLOCK_HIT_BY_FLAMING_ARROW : VolatileBlock.EReactionType.BLOCK_HIT_BY_ARROW;
+        } else {
+            reactionType = flamingProjectile ? VolatileBlock.EReactionType.BLOCK_HIT_BY_BURNING_PROJECTILE : VolatileBlock.EReactionType.BLOCK_HIT_BY_PROJECTILE;
+        }
+
         if (handleVolatile(event::setCancelled, event.getHitBlock(), shooter, reactionType)) {
             event.getEntity().remove();
         }
