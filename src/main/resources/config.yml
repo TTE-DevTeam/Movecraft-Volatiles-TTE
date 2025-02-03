@@ -5,10 +5,12 @@ VolatileBlocks:
   # - 1:  Block catches fire / begins to burn
   # - 2:  Block burnt by fire
   # - 4:  Block got caught in a explosion caused by a block (e.g. bed), or when a tnt is primed and the block is a tnt
-  # - 8:  Block got hit by a projectile
-  # - 16: Block got hit by a burning projectile
+  # - 8:  Block got hit by a projectile (EXCEPT arrows)
+  # - 16: Block got hit by a burning projectile (EXCEPT arrows)
   # - 32: Block got caught in a explosion caused by a entity (e.g. a creeper or tnt)
   # - 64: Block got caught in a explosion caused by volatiles (WARNING: this can cause massive lag due to chain reactions!)
+  # - 128: Block got hit by arrow
+  # - 256: Block got hit by a flaming arrow
   #Standard flyblock volatiles, triggers when blocks are burnt
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
@@ -17,16 +19,35 @@ VolatileBlocks:
     IsIncendiary: true
     IncendiaryProbability: 0.25
     IsCraftPresenceNecessary: false
-    EventMask: 3
+    EventMask: 258
   #Flyblocks when hit by projectiles
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/flyblocks"
-    ExplosionPower: 6.0
-    ExplosionProbability: 0.33
+    ExplosionPower: 4.0
+    ExplosionProbability: 0.1
     IsIncendiary: true
     IncendiaryProbability: 0.5
     IsCraftPresenceNecessary: false
     EventMask: 16
+  #Wooden flyblocks when hit by heavy AA / arrows
+  - ==: VolatileBlock
+    Block: "#movecraft_volatiles_tte:volatiles/wooden_flyblocks"
+    ExplosionPower: 6.0
+    ExplosionProbability: 0.33
+    IsIncendiary: true
+    IncendiaryProbability: 0.25
+    IsCraftPresenceNecessary: true
+    EventMask: 256
+    CraftTypeList:
+      - AIRSKIFF
+      - BIGAIRSKIFF
+      - SUBAIRSKIFF
+      - BIGSUBAIRSKIFF
+      - AIRSKIFFRAM
+      - RAMAIRSKIFF
+      - LAUNCHBIGBOMB
+      - LAUNCHMEGABOMB
+      - LIGHTAIRSHIP
   #Ammunition blocks detonate on explosion, ignition and burning projectile hits
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/munitions"
@@ -35,11 +56,11 @@ VolatileBlocks:
     IsIncendiary: true
     IncendiaryProbability: 0.33
     IsCraftPresenceNecessary: false
-    EventMask: 22
+    EventMask: 278
   - ==: VolatileBlock
     Block: "#movecraft_volatiles_tte:volatiles/tnt"
     ExplosionPower: 5.0
     ExplosionProbability: 0.8
     IsIncendiary: false
     IsCraftPresenceNecessary: false
-    EventMask: 22
+    EventMask: 278
