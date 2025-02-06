@@ -19,7 +19,7 @@ public record VolatileBlock (
     boolean isIncendiary,
     double incendiaryProbability,
     boolean requiresCraft,
-    byte eventMask,
+    int eventMask,
     String commandToRun,
     List<String> craftTypeList,
     boolean listIsBlackList
@@ -27,36 +27,36 @@ public record VolatileBlock (
 
     public static enum EReactionType {
 
-        BLOCK_CATCH_FIRE((byte) 1),
-        BLOCK_BURNT((byte) 2),
-        BLOCK_EXPLOSION_BY_BLOCK((byte) 4),
-        BLOCK_HIT_BY_PROJECTILE((byte) 8),
-        BLOCK_HIT_BY_BURNING_PROJECTILE((byte) 16),
-        BLOCK_EXPLOSION_BY_ENTITY((byte) 32),
-        BLOCK_EXPLOSION_BY_VOLATILES((byte) 64),
-        BLOCK_HIT_BY_ARROW((byte) 128),
-        BLOCK_HIT_BY_FLAMING_ARROW((byte) 256);
+        BLOCK_CATCH_FIRE((short) 1),
+        BLOCK_BURNT((short) 2),
+        BLOCK_EXPLOSION_BY_BLOCK((short) 4),
+        BLOCK_HIT_BY_PROJECTILE((short) 8),
+        BLOCK_HIT_BY_BURNING_PROJECTILE((short) 16),
+        BLOCK_EXPLOSION_BY_ENTITY((short) 32),
+        BLOCK_EXPLOSION_BY_VOLATILES((short) 64),
+        BLOCK_HIT_BY_ARROW((short) 128),
+        BLOCK_HIT_BY_FLAMING_ARROW((short) 256);
 
-        private final byte bit;
+        private final short bit;
 
-        EReactionType(byte value) {
+        EReactionType(short value) {
             this.bit = value;
         }
 
-        public boolean coveredByMask(byte mask) {
-            return (mask & this.bit) > (byte)0;
+        public boolean coveredByMask(short mask) {
+            return (mask & this.bit) > (short)0;
         }
 
         public boolean coveredByMask(VolatileBlock volatileBlock) {
-            return coveredByMask(volatileBlock.eventMask());
+            return coveredByMask((short) volatileBlock.eventMask());
         }
 
-        public byte maskValue() {
+        public short maskValue() {
             return this.bit;
         }
     }
 
-    public VolatileBlock(String blockMask, double explosivePower, double explosionProbability, boolean isIncendiary, double incendiaryProbability, boolean requiresCraft, byte eventMask, String commandToRun, List<String> craftTypeList, boolean listIsBlackList) {
+    public VolatileBlock(String blockMask, double explosivePower, double explosionProbability, boolean isIncendiary, double incendiaryProbability, boolean requiresCraft, int eventMask, String commandToRun, List<String> craftTypeList, boolean listIsBlackList) {
         this.blockMask = blockMask;
         this.explosivePower = explosivePower;
         this.explosionProbability = explosionProbability;
@@ -129,7 +129,7 @@ public record VolatileBlock (
                 incendiary,
                 NumberConversions.toDouble(args.getOrDefault("IncendiaryProbability", 1)),
                 craftIsNecessary,
-                NumberConversions.toByte(args.get("EventMask")),
+                NumberConversions.toShort(args.get("EventMask")),
                 String.valueOf(args.getOrDefault("CommandToRun", "")),
                 typeList,
                 listIsBlacklist
