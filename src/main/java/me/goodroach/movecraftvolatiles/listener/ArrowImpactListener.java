@@ -18,10 +18,17 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 
 public class ArrowImpactListener implements Listener {
 
+    // TODO: Colored tracers for potion arrows => Color of the potion
+    // TODO: Add somethign special for spectral arrows => They dont cause volatile reactions but can place fires if on fire
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onArrowHitBlock(final ProjectileHitEvent event) {
         Entity projectile = event.getEntity();
         if (!(projectile instanceof AbstractArrow) || projectile instanceof Trident) {
+            return;
+        }
+
+        if (!Settings.enableArrowsPlacingFire) {
             return;
         }
 
