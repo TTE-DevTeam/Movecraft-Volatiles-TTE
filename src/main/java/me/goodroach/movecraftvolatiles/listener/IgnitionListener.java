@@ -25,6 +25,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -368,6 +369,9 @@ public class IgnitionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExploded(EntityExplodeEvent event) {
         VolatileBlock.EReactionType eventType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_ENTITY;
+        if (event.getEntity() != null && eveng.getEntityType() == WIND_CHARGE) {
+            return;
+        }
         if (event.getEntity() != null && event.getEntity() instanceof TNTPrimed && event.getEntity().hasMetadata(VOLATILE_EXPLOSION_METADATA_FLAG)) {
             eventType = VolatileBlock.EReactionType.BLOCK_EXPLOSION_BY_VOLATILES;
         }
