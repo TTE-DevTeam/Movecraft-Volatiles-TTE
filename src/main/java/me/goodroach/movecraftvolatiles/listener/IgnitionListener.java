@@ -244,6 +244,10 @@ public class IgnitionListener implements Listener {
                 continue;
             }
 
+            if (other.getHitBox().isEmpty()) {
+                continue;
+            }
+
             long distSquared = other.getHitBox().getMidPoint().distanceSquared(loc);
             if (distSquared < closestDistSquared) {
                 closestDistSquared = distSquared;
