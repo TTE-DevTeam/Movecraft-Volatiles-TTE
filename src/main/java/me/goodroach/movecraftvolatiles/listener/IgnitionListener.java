@@ -2,6 +2,7 @@ package me.goodroach.movecraftvolatiles.listener;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import me.goodroach.movecraftvolatiles.MovecraftVolatiles;
+import me.goodroach.movecraftvolatiles.config.Settings;
 import me.goodroach.movecraftvolatiles.data.VolatileBlock;
 import me.goodroach.movecraftvolatiles.tracking.Volatile;
 import net.countercraft.movecraft.MovecraftLocation;
@@ -332,6 +333,15 @@ public class IgnitionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onProjectileHit(ProjectileHitEvent event) {
         if (event.getHitBlock() == null || event.getEntity().isDead()) {
+            return;
+        }
+
+        // Checks if a projectile hits through a non-solid block such as a slab. Also yes, I know that this is ugly.
+        if (
+                event.getHitBlockFace() != null &&
+                event.getHitBlock().getRelative(event.getHitBlockFace()).getType() != Material.AIR &&
+                !Settings.projectilePassthrough
+        ) {
             return;
         }
 

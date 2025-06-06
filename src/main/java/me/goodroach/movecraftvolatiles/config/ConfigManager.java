@@ -26,6 +26,7 @@ public class ConfigManager {
 
         Settings.enableArrowsPlacingFire = config.getBoolean("ArrowsPlaceFire", true);
         Settings.arrowsPlaceFireChance = config.getDouble("ArrowsPlaceFireChance", 0.5);
+        Settings.projectilePassthrough = config.getBoolean("ProjectilePassthrough", true);
 
         List<VolatileBlock> volatiles = (List<VolatileBlock>) config.getList("VolatileBlocks");
         for (VolatileBlock volatileBlock : volatiles) {
