@@ -12,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class MovecraftVolatiles extends JavaPlugin {
 
     private static MovecraftVolatiles instance;
-    private ConfigManager configManager;
-    private VolatilesManager volatilesManager;
+    private ConfigManager configManager = new ConfigManager();
+    private VolatilesManager volatilesManager = new VolatilesManager();
 
     @Override
     public void onEnable() {
@@ -21,17 +21,14 @@ public final class MovecraftVolatiles extends JavaPlugin {
         
         instance = this;
 
-        volatilesManager = new VolatilesManager();
+        saveDefaultConfig();
+        configManager.reloadConfig();
 
         getServer().getPluginManager().registerEvents(new IgnitionListener(), this);
 
         if (Settings.enableArrowsPlacingFire && Settings.arrowsPlaceFireChance > 0) {
             getServer().getPluginManager().registerEvents(new ArrowImpactListener(), this);
         }
-
-        configManager = new ConfigManager();
-        configManager.reloadConfig();
-        saveDefaultConfig();
     }
 
     @Override

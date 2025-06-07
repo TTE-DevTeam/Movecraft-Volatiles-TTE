@@ -6,23 +6,19 @@ import net.countercraft.movecraft.util.Tags;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    private File configFile;
     private FileConfiguration config;
 
     public ConfigManager() {
-        configFile = new File(MovecraftVolatiles.getInstance().getDataFolder(), "config.yml");
     }
 
     public void reloadConfig() {
-        config = YamlConfiguration.loadConfiguration(configFile);
+        config = MovecraftVolatiles.getInstance().getConfig();
 
         Settings.enableArrowsPlacingFire = config.getBoolean("ArrowsPlaceFire", true);
         Settings.arrowsPlaceFireChance = config.getDouble("ArrowsPlaceFireChance", 0.5);
