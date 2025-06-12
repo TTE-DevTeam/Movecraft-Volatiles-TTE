@@ -145,6 +145,7 @@ public class IgnitionListener implements Listener {
                 return false;
             }
         }
+        // TODO: Change to general craft method
         final Craft craft = fastNearestPlayerCraftToLoc(affectedBlock.getLocation());
 
         if (volatileBlock.requiresCraft()) {
@@ -158,12 +159,11 @@ public class IgnitionListener implements Listener {
 
         if (craft != null && !volatileBlock.craftTypeList().isEmpty()) {
             boolean inList = volatileBlock.craftTypeList().contains(craft.getType().getStringProperty(CraftType.NAME).toUpperCase());
-            if (volatileBlock.listIsBlackList() && inList) {
+            // Simple check => returns false when the list is a blacklist and the craft is not in the list or if it is a whitelist and the craft isnt in the list
+            if (volatileBlock.listIsBlacklist() == inList) {
                 return false;
             }
-            if (!volatileBlock.listIsBlackList() && !inList) {
-                return false;
-            }
+            
         }
 
         // Remove block, then check for explosion, if necessary, revert that. Revert happens later
