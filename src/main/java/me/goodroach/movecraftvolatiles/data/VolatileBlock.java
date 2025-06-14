@@ -110,7 +110,7 @@ public record VolatileBlock (
         try {
             typeList = (List<String>) objectTypeList;
             if (!typeList.isEmpty()) {
-                List<String> tmpList = new ArrayList<>(typeList.size());
+                List<String> tmpList = new ArrayList<>(typeList);
                 typeList.clear();
                 final List<String> typeListTmp = typeList;
                 tmpList.forEach(s -> {
