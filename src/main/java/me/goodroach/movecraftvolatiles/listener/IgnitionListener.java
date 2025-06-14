@@ -160,7 +160,7 @@ public class IgnitionListener implements Listener {
         if (craft != null && !volatileBlock.craftTypeList().isEmpty()) {
             boolean inList = volatileBlock.craftTypeList().contains(craft.getType().getStringProperty(CraftType.NAME).toUpperCase());
             // Simple check => returns false when the list is a blacklist and the craft is not in the list or if it is a whitelist and the craft isnt in the list
-            if (volatileBlock.listIsBlacklist() == inList) {
+            if (volatileBlock.listIsBlackList() == inList) {
                 return false;
             }
             
